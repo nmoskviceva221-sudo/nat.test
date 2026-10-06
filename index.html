@@ -7,63 +7,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .font-serif {
-            font-family: 'Playfair Display', serif;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prose h1 { font-size: 2em; font-weight: 700; margin: 1em 0 0.5em; }
+        .prose h2 { font-size: 1.5em; font-weight: 600; margin: 1em 0 0.5em; }
+        .prose p { margin: 0.5em 0; line-height: 1.7; }
+        .prose ul, .prose ol { margin: 0.5em 0; padding-left: 1.5em; }
+        .prose li { margin: 0.25em 0; }
+        .prose strong { font-weight: 600; }
     </style>
 </head>
 <body class="bg-slate-50">
     <div id="app"></div>
 
     <script>
-        // ============ DATA LAYER (localStorage) ============
-        
+        // ============ DATABASE (localStorage) ============
         const DB = {
             get(key) {
                 const data = localStorage.getItem(`lexolymp_${key}`);
                 return data ? JSON.parse(data) : null;
             },
-            
             set(key, value) {
                 localStorage.setItem(`lexolymp_${key}`, JSON.stringify(value));
             },
-            
             init() {
                 if (!this.get('initialized')) {
                     this.seed();
                     this.set('initialized', true);
                 }
             },
-            
             seed() {
-                // Пользователи
                 this.set('users', [
                     { id: '1', email: 'admin@lexolymp.ru', name: 'Администратор', password: 'admin123', role: 'ADMIN' },
                     { id: '2', email: 'student@lexolymp.ru', name: 'Иван Петров', password: 'user123', role: 'USER' }
                 ]);
                 
-                // Отрасли
                 const branches = [
                     { id: 'b1', name: 'Конституционное право', slug: 'konstitucionnoe-pravo', description: 'Основы конституционного строя, права и свободы человека', order: 1 },
                     { id: 'b2', name: 'Гражданское право', slug: 'grazhdanskoe-pravo', description: 'Имущественные и личные неимущественные отношения', order: 2 },
@@ -72,7 +53,6 @@
                 ];
                 this.set('branches', branches);
                 
-                // Темы
                 const topics = [
                     { id: 't1', branchId: 'b2', name: 'Сделки', slug: 'sdelki', description: 'Понятие, виды, форма и действительность сделок', order: 1 },
                     { id: 't2', branchId: 'b2', name: 'Договоры', slug: 'dogovory', description: 'Понятие и виды договоров', order: 2 },
@@ -82,195 +62,62 @@
                 ];
                 this.set('topics', topics);
                 
-                // Материалы
                 const materials = [
                     {
-                        id: 'm1',
-                        topicId: 't1',
-                        title: 'Сделки в гражданском праве',
-                        status: 'PUBLISHED',
-                        version: 1,
-                        content: `<h1>Понятие сделки</h1>
-<p><strong>Сделка</strong> — действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей (ст. 153 ГК РФ).</p>
-
-<h2>Виды сделок</h2>
-<p>По количеству сторон:</p>
-<ul>
-<li><strong>Односторонние</strong> — для совершения достаточно воли одной стороны (завещание, выдача доверенности)</li>
-<li><strong>Двусторонние (договоры)</strong> — требуют согласования воли двух сторон</li>
-<li><strong>Многосторонние</strong> — требуют согласования воли трех и более сторон</li>
-</ul>
-
-<p>По характеру встречного предоставления:</p>
-<ul>
-<li><strong>Возмездные</strong> — каждая сторона получает встречное предоставление</li>
-<li><strong>Безвозмездные</strong> — одна сторона предоставляет что-либо другой без встречного предоставления</li>
-</ul>
-
-<h2>Недействительность сделок</h2>
-<p><strong>Оспоримая сделка</strong> — может быть признана недействительной только судом (ст. 166 ГК РФ).</p>
-<p><strong>Ничтожная сделка</strong> — недействительна независимо от признания судом.</p>
-
-<p>Основания недействительности:</p>
-<ul>
-<li>Нарушение закона</li>
-<li>Мнимость и притворность</li>
-<li>Совершение под влиянием обмана, насилия, угрозы</li>
-<li>Недееспособность гражданина</li>
-<li>Несоответствии несовершеннолетнего возрастным требованиям</li>
-</ul>`
+                        id: 'm1', topicId: 't1', title: 'Сделки в гражданском праве', status: 'PUBLISHED', version: 1,
+                        content: `<h1>Понятие сделки</h1><p><strong>Сделка</strong> — действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей (ст. 153 ГК РФ).</p><h2>Виды сделок</h2><p>По количеству сторон:</p><ul><li><strong>Односторонние</strong> — для совершения достаточно воли одной стороны (завещание, выдача доверенности)</li><li><strong>Двусторонние (договоры)</strong> — требуют согласования воли двух сторон</li><li><strong>Многосторонние</strong> — требуют согласования воли трех и более сторон</li></ul><h2>Недействительность сделок</h2><p><strong>Оспоримая сделка</strong> — может быть признана недействительной только судом (ст. 166 ГК РФ).</p><p><strong>Ничтожная сделка</strong> — недействительна независимо от признания судом.</p>`
                     }
                 ];
                 this.set('materials', materials);
                 
-                // Вопросы
                 const questions = [
-                    {
-                        id: 'q1',
-                        topicId: 't1',
-                        materialId: 'm1',
-                        type: 'SINGLE_CHOICE',
-                        difficulty: 'EASY',
-                        question: 'Что является определением сделки?',
-                        options: [
-                            { id: 'a', text: 'Действие, запрещенное законом' },
-                            { id: 'b', text: 'Действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей' },
-                            { id: 'c', text: 'Любое соглашение между двумя лицами' },
-                            { id: 'd', text: 'Только письменное соглашение' }
-                        ],
-                        correctAnswer: 'b',
-                        explanation: 'Согласно ст. 153 ГК РФ, сделкой признаются действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей.',
-                        status: 'PUBLISHED'
-                    },
-                    {
-                        id: 'q2',
-                        topicId: 't1',
-                        materialId: 'm1',
-                        type: 'SINGLE_CHOICE',
-                        difficulty: 'MEDIUM',
-                        question: 'Какая сделка может быть признана недействительной только судом?',
-                        options: [
-                            { id: 'a', text: 'Ничтожная' },
-                            { id: 'b', text: 'Оспоримая' },
-                            { id: 'c', text: 'Мнимая' },
-                            { id: 'd', text: 'Притворная' }
-                        ],
-                        correctAnswer: 'b',
-                        explanation: 'Оспоримая сделка может быть признана недействительной только судом (ст. 166 ГК РФ). Ничтожная — недействительна независимо от признания судом.',
-                        status: 'PUBLISHED'
-                    },
-                    {
-                        id: 'q3',
-                        topicId: 't1',
-                        materialId: 'm1',
-                        type: 'TRUE_FALSE',
-                        difficulty: 'EASY',
-                        question: 'Договор является двусторонней сделкой.',
-                        correctAnswer: true,
-                        explanation: 'Договор — это сделка с двумя встречными обязательствами, то есть двусторонняя (или многосторонняя) сделка.',
-                        status: 'PUBLISHED'
-                    },
-                    {
-                        id: 'q4',
-                        topicId: 't1',
-                        materialId: 'm1',
-                        type: 'SINGLE_CHOICE',
-                        difficulty: 'HARD',
-                        question: 'Гражданин А. заключил договор купли-продажи автомобиля, находясь под влиянием обмана со стороны покупателя. Какая это сделка?',
-                        options: [
-                            { id: 'a', text: 'Ничтожная' },
-                            { id: 'b', text: 'Оспоримая' },
-                            { id: 'c', text: 'Действительная' },
-                            { id: 'd', text: 'Мнимая' }
-                        ],
-                        correctAnswer: 'b',
-                        explanation: 'Сделка, совершенная под влиянием обмана, является оспоримой (ст. 179 ГК РФ). Она может быть признана недействительной по иску потерпевшего.',
-                        status: 'PUBLISHED'
-                    },
-                    {
-                        id: 'q5',
-                        topicId: 't1',
-                        materialId: 'm1',
-                        type: 'MULTI_CHOICE',
-                        difficulty: 'MEDIUM',
-                        question: 'Какие сделки являются односторонними?',
-                        options: [
-                            { id: 'a', text: 'Завещание' },
-                            { id: 'b', text: 'Договор купли-продажи' },
-                            { id: 'c', text: 'Выдача доверенности' },
-                            { id: 'd', text: 'Договор аренды' }
-                        ],
-                        correctAnswer: ['a', 'c'],
-                        explanation: 'Односторонняя сделка — для совершения достаточно воли одной стороны. Завещание и выдача доверенности — односторонние сделки. Договоры — двусторонние.',
-                        status: 'PUBLISHED'
-                    }
+                    { id: 'q1', topicId: 't1', materialId: 'm1', type: 'SINGLE_CHOICE', difficulty: 'EASY', question: 'Что является определением сделки?', options: [{ id: 'a', text: 'Действие, запрещенное законом' }, { id: 'b', text: 'Действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей' }, { id: 'c', text: 'Любое соглашение между двумя лицами' }, { id: 'd', text: 'Только письменное соглашение' }], correctAnswer: 'b', explanation: 'Согласно ст. 153 ГК РФ, сделкой признаются действия граждан и юридических лиц, направленные на установление, изменение или прекращение гражданских прав и обязанностей.', status: 'PUBLISHED' },
+                    { id: 'q2', topicId: 't1', materialId: 'm1', type: 'SINGLE_CHOICE', difficulty: 'MEDIUM', question: 'Какая сделка может быть признана недействительной только судом?', options: [{ id: 'a', text: 'Ничтожная' }, { id: 'b', text: 'Оспоримая' }, { id: 'c', text: 'Мнимая' }, { id: 'd', text: 'Притворная' }], correctAnswer: 'b', explanation: 'Оспоримая сделка может быть признана недействительной только судом (ст. 166 ГК РФ).', status: 'PUBLISHED' },
+                    { id: 'q3', topicId: 't1', materialId: 'm1', type: 'TRUE_FALSE', difficulty: 'EASY', question: 'Договор является двусторонней сделкой.', correctAnswer: true, explanation: 'Договор — это сделка с двумя встречными обязательствами.', status: 'PUBLISHED' },
+                    { id: 'q4', topicId: 't1', materialId: 'm1', type: 'SINGLE_CHOICE', difficulty: 'HARD', question: 'Гражданин А. заключил договор купли-продажи автомобиля, находясь под влиянием обмана. Какая это сделка?', options: [{ id: 'a', text: 'Ничтожная' }, { id: 'b', text: 'Оспоримая' }, { id: 'c', text: 'Действительная' }, { id: 'd', text: 'Мнимая' }], correctAnswer: 'b', explanation: 'Сделка, совершенная под влиянием обмана, является оспоримой (ст. 179 ГК РФ).', status: 'PUBLISHED' },
+                    { id: 'q5', topicId: 't1', materialId: 'm1', type: 'MULTI_CHOICE', difficulty: 'MEDIUM', question: 'Какие сделки являются односторонними?', options: [{ id: 'a', text: 'Завещание' }, { id: 'b', text: 'Договор купли-продажи' }, { id: 'c', text: 'Выдача доверенности' }, { id: 'd', text: 'Договор аренды' }], correctAnswer: ['a', 'c'], explanation: 'Односторонняя сделка — для совершения достаточно воли одной стороны.', status: 'PUBLISHED' }
                 ];
                 this.set('questions', questions);
-                
-                // Прогресс, попытки и т.д. инициализируем пустыми
                 this.set('progress', []);
                 this.set('attempts', []);
                 this.set('errors', []);
+                this.set('bookmarks', []);
                 this.set('currentUser', null);
             }
         };
-        
+
         // ============ ROUTER ============
-        
         const Router = {
             currentRoute: '',
-            
             init() {
                 window.addEventListener('hashchange', () => this.navigate());
                 this.navigate();
             },
-            
             navigate() {
                 const hash = window.location.hash.slice(1) || '/';
                 this.currentRoute = hash;
                 this.render();
             },
-            
             goTo(path) {
                 window.location.hash = path;
             },
-            
             render() {
                 const user = DB.get('currentUser');
                 if (!user && !this.currentRoute.startsWith('/login') && !this.currentRoute.startsWith('/register')) {
                     this.goTo('/login');
                     return;
                 }
-                
                 const routes = {
-                    '/': () => renderDashboard(),
-                    '/branches': () => renderBranches(),
-                    '/branches/': (id) => renderBranch(id),
-                    '/topics/': (id) => renderTopic(id),
-                    '/materials/': (id) => renderMaterial(id),
-                    '/quiz/new': () => renderQuizSetup(),
-                    '/quiz/': (id) => renderQuizRunner(id),
-                    '/results/': (id) => renderResults(id),
-                    '/progress': () => renderProgress(),
-                    '/review': () => renderReview(),
-                    '/bookmarks': () => renderBookmarks(),
-                    '/olympiad': () => renderOlympiad(),
-                    '/settings': () => renderSettings(),
-                    '/admin': () => renderAdmin(),
-                    '/admin/branches': () => renderAdminBranches(),
-                    '/admin/topics': () => renderAdminTopics(),
-                    '/admin/materials': () => renderAdminMaterials(),
-                    '/admin/questions': () => renderAdminQuestions(),
-                    '/login': () => renderLogin(),
-                    '/register': () => renderRegister()
+                    '/': renderDashboard, '/branches': renderBranches, '/progress': renderProgress,
+                    '/review': renderReview, '/bookmarks': renderBookmarks, '/olympiad': renderOlympiad,
+                    '/settings': renderSettings, '/admin': renderAdmin, '/admin/branches': renderAdminBranches,
+                    '/admin/topics': renderAdminTopics, '/admin/materials': renderAdminMaterials,
+                    '/admin/questions': renderAdminQuestions, '/login': renderLogin, '/register': renderRegister
                 };
-                
-                // Находим подходящий маршрут
                 for (const [pattern, handler] of Object.entries(routes)) {
                     if (pattern.endsWith('/')) {
                         if (this.currentRoute.startsWith(pattern)) {
-                            const id = this.currentRoute.slice(pattern.length);
-                            handler(id);
+                            handler(this.currentRoute.slice(pattern.length));
                             return;
                         }
                     } else if (this.currentRoute === pattern) {
@@ -278,51 +125,33 @@
                         return;
                     }
                 }
-                
                 renderNotFound();
             }
         };
-        
+
         // ============ BUSINESS LOGIC ============
-        
         const ProgressService = {
             calculateMastery(userId, topicId) {
-                const attempts = DB.get('attempts').filter(a => 
-                    a.userId === userId && 
-                    a.completedAt && 
-                    a.quiz?.topicId === topicId
-                );
-                
+                const attempts = DB.get('attempts').filter(a => a.userId === userId && a.completedAt && a.topicId === topicId);
                 if (attempts.length === 0) return { mastery: 0, confidence: 0 };
-                
                 const now = Date.now();
-                let weightedScore = 0;
-                let totalWeight = 0;
-                
+                let weightedScore = 0, totalWeight = 0;
                 attempts.forEach(attempt => {
                     const daysSince = Math.max(1, (now - new Date(attempt.completedAt).getTime()) / (1000 * 60 * 60 * 24));
                     const recencyWeight = Math.pow(0.5, daysSince / 30);
-                    
                     const difficultyWeights = { EASY: 1, MEDIUM: 2, HARD: 3, OLYMPIAD: 4 };
-                    const avgDifficulty = attempt.difficulty || 'MEDIUM';
-                    const weight = recencyWeight * difficultyWeights[avgDifficulty];
-                    
+                    const weight = recencyWeight * difficultyWeights[attempt.difficulty || 'MEDIUM'];
                     weightedScore += (attempt.score / 100) * weight;
                     totalWeight += weight;
                 });
-                
                 const mastery = totalWeight > 0 ? (weightedScore / totalWeight) * 100 : 0;
-                const confidence = attempts.length > 0 ? Math.min(100, attempts.length * 20) : 0;
-                
+                const confidence = Math.min(100, attempts.length * 20);
                 return { mastery: Math.round(mastery), confidence: Math.round(confidence) };
             },
-            
             updateProgress(userId, topicId, attempt) {
                 const progress = DB.get('progress') || [];
                 const existing = progress.find(p => p.userId === userId && p.topicId === topicId);
-                
                 const { mastery, confidence } = this.calculateMastery(userId, topicId);
-                
                 if (existing) {
                     existing.masteryScore = mastery;
                     existing.confidence = confidence;
@@ -331,42 +160,21 @@
                     existing.totalAnswers += attempt.totalCount;
                     existing.lastStudiedAt = new Date().toISOString();
                 } else {
-                    progress.push({
-                        userId,
-                        topicId,
-                        masteryScore: mastery,
-                        confidence,
-                        attemptsCount: 1,
-                        correctAnswers: attempt.correctCount,
-                        totalAnswers: attempt.totalCount,
-                        lastStudiedAt: new Date().toISOString(),
-                        nextReviewAt: new Date(Date.now() + 86400000).toISOString()
-                    });
+                    progress.push({ userId, topicId, masteryScore: mastery, confidence, attemptsCount: 1, correctAnswers: attempt.correctCount, totalAnswers: attempt.totalCount, lastStudiedAt: new Date().toISOString(), nextReviewAt: new Date(Date.now() + 86400000).toISOString() });
                 }
-                
                 DB.set('progress', progress);
             },
-            
             getWeakTopics(userId, limit = 5) {
                 const progress = DB.get('progress').filter(p => p.userId === userId);
-                return progress
-                    .filter(p => p.masteryScore < 85)
-                    .sort((a, b) => a.masteryScore - b.masteryScore)
-                    .slice(0, limit)
-                    .map(p => {
-                        const topic = DB.get('topics').find(t => t.id === p.topicId);
-                        const branch = DB.get('branches').find(b => b.id === topic?.branchId);
-                        return {
-                            ...p,
-                            topicName: topic?.name,
-                            branchName: branch?.name
-                        };
-                    });
+                return progress.filter(p => p.masteryScore < 85).sort((a, b) => a.masteryScore - b.masteryScore).slice(0, limit).map(p => {
+                    const topic = DB.get('topics').find(t => t.id === p.topicId);
+                    const branch = DB.get('branches').find(b => b.id === topic?.branchId);
+                    return { ...p, topicName: topic?.name, branchName: branch?.name };
+                });
             }
         };
-        
+
         // ============ UI HELPERS ============
-        
         function getMasteryLevel(score) {
             if (score < 20) return { label: 'Не изучено', color: 'text-slate-400' };
             if (score < 40) return { label: 'Начальный уровень', color: 'text-orange-500' };
@@ -375,7 +183,7 @@
             if (score < 90) return { label: 'Хороший уровень', color: 'text-emerald-600' };
             return { label: 'Отличное освоение', color: 'text-green-700' };
         }
-        
+
         function getMasteryColor(score) {
             if (score < 20) return 'bg-slate-300';
             if (score < 40) return 'bg-orange-500';
@@ -384,164 +192,44 @@
             if (score < 90) return 'bg-emerald-500';
             return 'bg-green-600';
         }
-        
-        function MasteryBar({ value, size = 'md', showLabel = true }) {
+
+        function MasteryBar(value, size = 'md', showLabel = true) {
             const heights = { sm: 'h-1.5', md: 'h-2', lg: 'h-3' };
-            return `
-                <div class="space-y-1">
-                    ${showLabel ? `<div class="flex items-center justify-between text-xs"><span class="text-slate-500">${value}%</span></div>` : ''}
-                    <div class="w-full overflow-hidden rounded-full bg-slate-100 ${heights[size]}">
-                        <div class="h-full rounded-full transition-all ${getMasteryColor(value)}" style="width: ${Math.min(100, Math.max(0, value))}%"></div>
-                    </div>
-                </div>
-            `;
+            return `<div class="space-y-1">${showLabel ? `<div class="flex items-center justify-between text-xs"><span class="text-slate-500">${value}%</span></div>` : ''}<div class="w-full overflow-hidden rounded-full bg-slate-100 ${heights[size]}"><div class="h-full rounded-full transition-all ${getMasteryColor(value)}" style="width: ${Math.min(100, Math.max(0, value))}%"></div></div></div>`;
         }
-        
+
         // ============ RENDER FUNCTIONS ============
-        
         function renderApp(content) {
             const user = DB.get('currentUser');
-            document.getElementById('app').innerHTML = `
-                ${user ? renderSidebar() : ''}
-                <div class="${user ? 'lg:pl-72' : ''}">
-                    ${user ? renderTopbar() : ''}
-                    <main class="px-4 py-8 sm:px-6 lg:px-10 fade-in">
-                        ${content}
-                    </main>
-                </div>
-            `;
+            document.getElementById('app').innerHTML = `${user ? renderSidebar() : ''}<div class="${user ? 'lg:pl-72' : ''}">${user ? renderTopbar() : ''}<main class="px-4 py-8 sm:px-6 lg:px-10 fade-in">${content}</main></div>`;
         }
-        
+
         function renderSidebar() {
             const user = DB.get('currentUser');
             const navItems = [
-                { href: '/', label: 'Главная', icon: '🏠' },
-                { href: '/branches', label: 'Отрасли права', icon: '📚' },
-                { href: '/progress', label: 'Мой прогресс', icon: '📊' },
-                { href: '/review', label: 'Повторение', icon: '🔄' },
-                { href: '/bookmarks', label: 'Закладки', icon: '🔖' },
-                { href: '/olympiad', label: 'Олимпиада', icon: '🏆' },
+                { href: '/', label: 'Главная', icon: '🏠' }, { href: '/branches', label: 'Отрасли права', icon: '📚' },
+                { href: '/progress', label: 'Мой прогресс', icon: '📊' }, { href: '/review', label: 'Повторение', icon: '🔄' },
+                { href: '/bookmarks', label: 'Закладки', icon: '🔖' }, { href: '/olympiad', label: 'Олимпиада', icon: '🏆' },
                 { href: '/settings', label: 'Настройки', icon: '⚙️' }
             ];
-            
-            return `
-                <aside class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-200 bg-white lg:block">
-                    <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-6">
-                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white font-bold">
-                            ⚖️
-                        </div>
-                        <div>
-                            <div class="font-serif text-lg font-semibold text-slate-900">LexOlymp</div>
-                            <div class="text-xs text-slate-500">Подготовка к олимпиаде</div>
-                        </div>
-                    </div>
-                    
-                    <nav class="space-y-1 p-4">
-                        ${navItems.map(item => `
-                            <a href="#${item.href}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                                Router.currentRoute === item.href ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-                            }">
-                                <span>${item.icon}</span>
-                                ${item.label}
-                            </a>
-                        `).join('')}
-                        
-                        ${user.role === 'ADMIN' ? `
-                            <div class="my-4 border-t border-slate-200"></div>
-                            <div class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Администрирование</div>
-                            <a href="#/admin" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100">
-                                <span>🛠️</span>
-                                Админ-панель
-                            </a>
-                        ` : ''}
-                    </nav>
-                    
-                    <div class="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4">
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
-                                ${user.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div class="flex-1 overflow-hidden">
-                                <div class="truncate text-sm font-medium text-slate-900">${user.name}</div>
-                                <div class="truncate text-xs text-slate-500">${user.email}</div>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-            `;
+            return `<aside class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-200 bg-white lg:block"><div class="flex h-16 items-center gap-3 border-b border-slate-200 px-6"><div class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white font-bold">⚖️</div><div><div class="font-serif text-lg font-semibold text-slate-900">LexOlymp</div><div class="text-xs text-slate-500">Подготовка к олимпиаде</div></div></div><nav class="space-y-1 p-4">${navItems.map(item => `<a href="#${item.href}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${Router.currentRoute === item.href ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}"><span>${item.icon}</span>${item.label}</a>`).join('')}${user.role === 'ADMIN' ? `<div class="my-4 border-t border-slate-200"></div><div class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Администрирование</div><a href="#/admin" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"><span>🛠️</span>Админ-панель</a>` : ''}</nav><div class="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4"><div class="flex items-center gap-3"><div class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">${user.name.charAt(0).toUpperCase()}</div><div class="flex-1 overflow-hidden"><div class="truncate text-sm font-medium text-slate-900">${user.name}</div><div class="truncate text-xs text-slate-500">${user.email}</div></div></div></div></aside>`;
         }
-        
+
         function renderTopbar() {
-            return `
-                <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur">
-                    <div class="flex h-16 items-center justify-between px-4 sm:px-6">
-                        <div class="flex-1"></div>
-                        <button onclick="logout()" class="text-sm text-slate-600 hover:text-slate-900">
-                            Выйти
-                        </button>
-                    </div>
-                </header>
-            `;
+            return `<header class="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur"><div class="flex h-16 items-center justify-between px-4 sm:px-6"><div class="flex-1"></div><button onclick="logout()" class="text-sm text-slate-600 hover:text-slate-900">Выйти</button></div></header>`;
         }
-        
+
         // ============ PAGES ============
-        
         function renderLogin() {
-            renderApp(`
-                <div class="flex min-h-[80vh] items-center justify-center">
-                    <div class="w-full max-w-md">
-                        <div class="text-center mb-8">
-                            <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 text-3xl mb-4">⚖️</div>
-                            <h1 class="font-serif text-3xl font-semibold text-slate-900">LexOlymp</h1>
-                            <p class="mt-2 text-slate-600">Подготовка к олимпиаде по праву</p>
-                        </div>
-                        
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-                            <h2 class="text-xl font-semibold text-slate-900 mb-6">Вход в систему</h2>
-                            
-                            <form onsubmit="handleLogin(event)" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
-                                    <input type="email" id="loginEmail" required
-                                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                                        placeholder="your@email.com">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
-                                    <input type="password" id="loginPassword" required
-                                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                                        placeholder="••••••••">
-                                </div>
-                                
-                                <button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                                    Войти
-                                </button>
-                            </form>
-                            
-                            <div class="mt-6 text-center text-sm text-slate-600">
-                                Нет аккаунта? <a href="#/register" class="text-slate-900 font-medium hover:underline">Зарегистрироваться</a>
-                            </div>
-                            
-                            <div class="mt-6 p-4 bg-slate-50 rounded-lg text-xs text-slate-600">
-                                <div class="font-medium mb-2">Демо-аккаунты:</div>
-                                <div>Админ: admin@lexolymp.ru / admin123</div>
-                                <div>Студент: student@lexolymp.ru / user123</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="flex min-h-[80vh] items-center justify-center"><div class="w-full max-w-md"><div class="text-center mb-8"><div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 text-3xl mb-4">⚖️</div><h1 class="font-serif text-3xl font-semibold text-slate-900">LexOlymp</h1><p class="mt-2 text-slate-600">Подготовка к олимпиаде по праву</p></div><div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8"><h2 class="text-xl font-semibold text-slate-900 mb-6">Вход в систему</h2><form onsubmit="handleLogin(event)" class="space-y-4"><div><label class="block text-sm font-medium text-slate-700 mb-2">Email</label><input type="email" id="loginEmail" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent" placeholder="your@email.com"></div><div><label class="block text-sm font-medium text-slate-700 mb-2">Пароль</label><input type="password" id="loginPassword" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent" placeholder="••••••••"></div><button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors">Войти</button></form><div class="mt-6 text-center text-sm text-slate-600">Нет аккаунта? <a href="#/register" class="text-slate-900 font-medium hover:underline">Зарегистрироваться</a></div><div class="mt-6 p-4 bg-slate-50 rounded-lg text-xs text-slate-600"><div class="font-medium mb-2">Демо-аккаунты:</div><div>Админ: admin@lexolymp.ru / admin123</div><div>Студент: student@lexolymp.ru / user123</div></div></div></div></div>`);
         }
-        
+
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            
             const users = DB.get('users');
             const user = users.find(u => u.email === email && u.password === password);
-            
             if (user) {
                 DB.set('currentUser', user);
                 Router.goTo('/');
@@ -549,207 +237,45 @@
                 alert('Неверный email или пароль');
             }
         }
-        
+
         function logout() {
             DB.set('currentUser', null);
             Router.goTo('/login');
         }
-        
+
         function renderDashboard() {
             const user = DB.get('currentUser');
             const progress = DB.get('progress').filter(p => p.userId === user.id);
             const attempts = DB.get('attempts').filter(a => a.userId === user.id && a.completedAt);
             const branches = DB.get('branches');
             const topics = DB.get('topics');
-            
             const totalTopics = topics.length;
             const studiedTopics = progress.filter(p => p.masteryScore > 0).length;
-            const avgScore = attempts.length > 0 
-                ? Math.round(attempts.reduce((s, a) => s + a.score, 0) / attempts.length)
-                : null;
+            const avgScore = attempts.length > 0 ? Math.round(attempts.reduce((s, a) => s + a.score, 0) / attempts.length) : null;
             const totalErrors = DB.get('errors').filter(e => e.userId === user.id && !e.resolvedAt).length;
-            
             const weakTopics = ProgressService.getWeakTopics(user.id, 3);
             
-            renderApp(`
-                <div class="mx-auto max-w-7xl space-y-8">
-                    <div>
-                        <h1 class="font-serif text-3xl font-semibold text-slate-900">
-                            Добро пожаловать, ${user.name.split(' ')[0]}
-                        </h1>
-                        <p class="mt-2 text-slate-600">Подготовка к олимпиаде по праву</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                        ${[
-                            { label: 'Общий прогресс', value: `${Math.round(progress.reduce((s, p) => s + p.masteryScore, 0) / Math.max(totalTopics, 1))}%`, icon: '📈', color: 'text-blue-600', bg: 'bg-blue-50' },
-                            { label: 'Изучено тем', value: `${studiedTopics}/${totalTopics}`, icon: '📚', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                            { label: 'Пройдено тестов', value: attempts.length.toString(), icon: '✓', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                            { label: 'Средний результат', value: avgScore !== null ? `${avgScore}%` : '—', icon: '🎯', color: 'text-amber-600', bg: 'bg-amber-50' },
-                            { label: 'Ошибок', value: totalErrors.toString(), icon: '⚠️', color: 'text-rose-600', bg: 'bg-rose-50' },
-                            { label: 'Серия занятий', value: '—', icon: '🔥', color: 'text-orange-600', bg: 'bg-orange-50' }
-                        ].map(stat => `
-                            <div class="bg-white rounded-lg border border-slate-200 p-4">
-                                <div class="flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}">
-                                    <span class="${stat.color}">${stat.icon}</span>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="text-2xl font-semibold text-slate-900">${stat.value}</div>
-                                    <div class="text-xs text-slate-500">${stat.label}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    ${weakTopics.length > 0 ? `
-                        <div class="bg-white rounded-xl border border-slate-200 p-6">
-                            <div class="mb-5 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-xl">🔄</div>
-                                    <div>
-                                        <h2 class="font-serif text-xl font-semibold text-slate-900">Рекомендуется повторить</h2>
-                                        <p class="text-sm text-slate-500">Сегодня стоит уделить внимание этим темам</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                ${weakTopics.map(topic => `
-                                    <a href="#/topics/${topic.topicId}" class="block rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50 transition-colors">
-                                        <div class="flex items-start justify-between gap-4">
-                                            <div class="flex-1">
-                                                <div class="text-xs font-medium text-slate-500">${topic.branchName}</div>
-                                                <div class="mt-1 font-medium text-slate-900">${topic.topicName}</div>
-                                                <div class="mt-1 text-xs text-slate-500">Освоение: ${Math.round(topic.masteryScore)}%</div>
-                                            </div>
-                                            <div class="w-32">
-                                                ${MasteryBar({ value: Math.round(topic.masteryScore), size: 'sm' })}
-                                            </div>
-                                        </div>
-                                    </a>
-                                `).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <div>
-                        <h2 class="mb-4 font-serif text-2xl font-semibold text-slate-900">Отрасли права</h2>
-                        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            ${branches.map(branch => {
-                                const branchTopics = topics.filter(t => t.branchId === branch.id);
-                                const branchProgress = progress.filter(p => branchTopics.some(t => t.id === p.topicId));
-                                const avgMastery = branchTopics.length > 0
-                                    ? Math.round(branchTopics.reduce((sum, t) => {
-                                        const p = branchProgress.find(bp => bp.topicId === t.id);
-                                        return sum + (p?.masteryScore || 0);
-                                    }, 0) / branchTopics.length)
-                                    : 0;
-                                
-                                return `
-                                    <a href="#/branches/${branch.id}" class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:shadow-md transition-all">
-                                        <div class="flex items-start justify-between">
-                                            <div class="flex-1">
-                                                <h3 class="font-serif text-lg font-semibold text-slate-900 group-hover:text-slate-700">${branch.name}</h3>
-                                                <p class="mt-2 text-sm text-slate-600 line-clamp-2">${branch.description}</p>
-                                                <div class="mt-4 flex items-center gap-4 text-xs text-slate-500">
-                                                    <span>📖 ${branchTopics.length} тем</span>
-                                                </div>
-                                                <div class="mt-3">
-                                                    ${MasteryBar({ value: avgMastery, size: 'sm' })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="mx-auto max-w-7xl space-y-8"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Добро пожаловать, ${user.name.split(' ')[0]}</h1><p class="mt-2 text-slate-600">Подготовка к олимпиаде по праву</p></div><div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">${[{ label: 'Общий прогресс', value: `${Math.round(progress.reduce((s, p) => s + p.masteryScore, 0) / Math.max(totalTopics, 1))}%`, icon: '📈', color: 'text-blue-600', bg: 'bg-blue-50' }, { label: 'Изучено тем', value: `${studiedTopics}/${totalTopics}`, icon: '📚', color: 'text-emerald-600', bg: 'bg-emerald-50' }, { label: 'Пройдено тестов', value: attempts.length.toString(), icon: '✓', color: 'text-indigo-600', bg: 'bg-indigo-50' }, { label: 'Средний результат', value: avgScore !== null ? `${avgScore}%` : '—', icon: '🎯', color: 'text-amber-600', bg: 'bg-amber-50' }, { label: 'Ошибок', value: totalErrors.toString(), icon: '⚠️', color: 'text-rose-600', bg: 'bg-rose-50' }, { label: 'Серия занятий', value: '—', icon: '🔥', color: 'text-orange-600', bg: 'bg-orange-50' }].map(stat => `<div class="bg-white rounded-lg border border-slate-200 p-4"><div class="flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}"><span class="${stat.color}">${stat.icon}</span></div><div class="mt-3"><div class="text-2xl font-semibold text-slate-900">${stat.value}</div><div class="text-xs text-slate-500">${stat.label}</div></div></div>`).join('')}</div>${weakTopics.length > 0 ? `<div class="bg-white rounded-xl border border-slate-200 p-6"><div class="mb-5 flex items-center gap-3"><div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-xl">🔄</div><div><h2 class="font-serif text-xl font-semibold text-slate-900">Рекомендуется повторить</h2><p class="text-sm text-slate-500">Сегодня стоит уделить внимание этим темам</p></div></div><div class="space-y-3">${weakTopics.map(topic => `<a href="#/topics/${topic.topicId}" class="block rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50 transition-colors"><div class="flex items-start justify-between gap-4"><div class="flex-1"><div class="text-xs font-medium text-slate-500">${topic.branchName}</div><div class="mt-1 font-medium text-slate-900">${topic.topicName}</div><div class="mt-1 text-xs text-slate-500">Освоение: ${Math.round(topic.masteryScore)}%</div></div><div class="w-32">${MasteryBar(Math.round(topic.masteryScore), 'sm')}</div></div></a>`).join('')}</div></div>` : ''}<div><h2 class="mb-4 font-serif text-2xl font-semibold text-slate-900">Отрасли права</h2><div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">${branches.map(branch => { const branchTopics = topics.filter(t => t.branchId === branch.id); const branchProgress = progress.filter(p => branchTopics.some(t => t.id === p.topicId)); const avgMastery = branchTopics.length > 0 ? Math.round(branchTopics.reduce((sum, t) => { const p = branchProgress.find(bp => bp.topicId === t.id); return sum + (p?.masteryScore || 0); }, 0) / branchTopics.length) : 0; return `<a href="#/branches/${branch.id}" class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:shadow-md transition-all"><div class="flex items-start justify-between"><div class="flex-1"><h3 class="font-serif text-lg font-semibold text-slate-900 group-hover:text-slate-700">${branch.name}</h3><p class="mt-2 text-sm text-slate-600 line-clamp-2">${branch.description}</p><div class="mt-4 flex items-center gap-4 text-xs text-slate-500"><span>📖 ${branchTopics.length} тем</span></div><div class="mt-3">${MasteryBar(avgMastery, 'sm')}</div></div></div></a>`; }).join('')}</div></div></div>`);
         }
-        
+
         function renderBranches() {
             const branches = DB.get('branches');
             const topics = DB.get('topics');
-            
-            renderApp(`
-                <div class="mx-auto max-w-6xl space-y-8">
-                    <div>
-                        <h1 class="font-serif text-4xl font-semibold text-slate-900">Отрасли права</h1>
-                        <p class="mt-2 text-slate-600">Выберите отрасль для изучения</p>
-                    </div>
-                    
-                    <div class="grid gap-6 md:grid-cols-2">
-                        ${branches.map(branch => {
-                            const branchTopics = topics.filter(t => t.branchId === branch.id);
-                            return `
-                                <a href="#/branches/${branch.id}" class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:shadow-md transition-all">
-                                    <h3 class="font-serif text-xl font-semibold text-slate-900 group-hover:text-slate-700">${branch.name}</h3>
-                                    <p class="mt-2 text-slate-600">${branch.description}</p>
-                                    <div class="mt-4 text-sm text-slate-500">${branchTopics.length} тем</div>
-                                </a>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="mx-auto max-w-6xl space-y-8"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Отрасли права</h1><p class="mt-2 text-slate-600">Выберите отрасль для изучения</p></div><div class="grid gap-6 md:grid-cols-2">${branches.map(branch => { const branchTopics = topics.filter(t => t.branchId === branch.id); return `<a href="#/branches/${branch.id}" class="group bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:shadow-md transition-all"><h3 class="font-serif text-xl font-semibold text-slate-900 group-hover:text-slate-700">${branch.name}</h3><p class="mt-2 text-slate-600">${branch.description}</p><div class="mt-4 text-sm text-slate-500">${branchTopics.length} тем</div></a>`; }).join('')}</div></div>`);
         }
-        
+
         function renderBranch(id) {
             const branch = DB.get('branches').find(b => b.id === id);
             if (!branch) return renderNotFound();
-            
             const topics = DB.get('topics').filter(t => t.branchId === id);
             const user = DB.get('currentUser');
             const progress = DB.get('progress').filter(p => p.userId === user.id);
-            
-            renderApp(`
-                <div class="mx-auto max-w-6xl space-y-8">
-                    <div>
-                        <a href="#/branches" class="mb-4 inline-flex items-center text-sm text-slate-500 hover:text-slate-900">← Все отрасли</a>
-                        <h1 class="font-serif text-4xl font-semibold text-slate-900">${branch.name}</h1>
-                        <p class="mt-3 text-slate-600">${branch.description}</p>
-                    </div>
-                    
-                    <div class="grid gap-4 md:grid-cols-2">
-                        ${topics.map((topic, idx) => {
-                            const p = progress.find(pr => pr.topicId === topic.id);
-                            const mastery = p?.masteryScore || 0;
-                            const status = mastery === 0 ? { label: 'Не начато', color: 'bg-slate-100 text-slate-600' }
-                                : mastery < 50 ? { label: 'В процессе', color: 'bg-amber-50 text-amber-700' }
-                                : mastery < 85 ? { label: 'Освоено', color: 'bg-blue-50 text-blue-700' }
-                                : { label: 'Отлично', color: 'bg-emerald-50 text-emerald-700' };
-                            
-                            const questionsCount = DB.get('questions').filter(q => q.topicId === topic.id && q.status === 'PUBLISHED').length;
-                            
-                            return `
-                                <a href="#/topics/${topic.id}" class="group bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 hover:shadow-md transition-all">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="flex-1">
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-xs font-semibold text-slate-400">${String(idx + 1).padStart(2, '0')}</span>
-                                                <span class="rounded-full px-2 py-0.5 text-xs font-medium ${status.color}">${status.label}</span>
-                                            </div>
-                                            <h3 class="mt-2 font-semibold text-slate-900">${topic.name}</h3>
-                                            <p class="mt-1 text-sm text-slate-500">${topic.description}</p>
-                                            <div class="mt-4 text-xs text-slate-500">📝 ${questionsCount} вопросов</div>
-                                            <div class="mt-3">
-                                                ${MasteryBar({ value: Math.round(mastery), size: 'sm' })}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="mx-auto max-w-6xl space-y-8"><div><a href="#/branches" class="mb-4 inline-flex items-center text-sm text-slate-500 hover:text-slate-900">← Все отрасли</a><h1 class="font-serif text-4xl font-semibold text-slate-900">${branch.name}</h1><p class="mt-3 text-slate-600">${branch.description}</p></div><div class="grid gap-4 md:grid-cols-2">${topics.map((topic, idx) => { const p = progress.find(pr => pr.topicId === topic.id); const mastery = p?.masteryScore || 0; const status = mastery === 0 ? { label: 'Не начато', color: 'bg-slate-100 text-slate-600' } : mastery < 50 ? { label: 'В процессе', color: 'bg-amber-50 text-amber-700' } : mastery < 85 ? { label: 'Освоено', color: 'bg-blue-50 text-blue-700' } : { label: 'Отлично', color: 'bg-emerald-50 text-emerald-700' }; const questionsCount = DB.get('questions').filter(q => q.topicId === topic.id && q.status === 'PUBLISHED').length; return `<a href="#/topics/${topic.id}" class="group bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 hover:shadow-md transition-all"><div class="flex items-start justify-between gap-3"><div class="flex-1"><div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-400">${String(idx + 1).padStart(2, '0')}</span><span class="rounded-full px-2 py-0.5 text-xs font-medium ${status.color}">${status.label}</span></div><h3 class="mt-2 font-semibold text-slate-900">${topic.name}</h3><p class="mt-1 text-sm text-slate-500">${topic.description}</p><div class="mt-4 text-xs text-slate-500">📝 ${questionsCount} вопросов</div><div class="mt-3">${MasteryBar(Math.round(mastery), 'sm')}</div></div></div></a>`; }).join('')}</div></div>`);
         }
-        
+
         function renderTopic(id) {
             const topic = DB.get('topics').find(t => t.id === id);
             if (!topic) return renderNotFound();
-            
             const branch = DB.get('branches').find(b => b.id === topic.branchId);
             const materials = DB.get('materials').filter(m => m.topicId === id && m.status === 'PUBLISHED');
             const questions = DB.get('questions').filter(q => q.topicId === id && q.status === 'PUBLISHED');
@@ -757,169 +283,291 @@
             const progress = DB.get('progress').find(p => p.userId === user.id && p.topicId === id);
             const mastery = progress?.masteryScore || 0;
             const level = getMasteryLevel(mastery);
-            
-            renderApp(`
-                <div class="mx-auto max-w-5xl space-y-8">
-                    <div class="flex items-center gap-2 text-sm text-slate-500">
-                        <a href="#/" class="hover:text-slate-900">Главная</a>
-                        <span>/</span>
-                        <a href="#/branches/${branch.id}" class="hover:text-slate-900">${branch.name}</a>
-                        <span>/</span>
-                        <span class="text-slate-900">${topic.name}</span>
-                    </div>
-                    
-                    <div>
-                        <h1 class="font-serif text-4xl font-semibold text-slate-900">${topic.name}</h1>
-                        <p class="mt-3 text-lg text-slate-600">${topic.description}</p>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl border border-slate-200 p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div class="text-sm text-slate-500">Уровень освоения</div>
-                                <div class="mt-1 flex items-baseline gap-3">
-                                    <span class="text-3xl font-semibold text-slate-900">${Math.round(mastery)}%</span>
-                                    <span class="text-sm font-medium ${level.color}">${level.label}</span>
-                                </div>
-                            </div>
-                            <div class="w-64">
-                                ${MasteryBar({ value: Math.round(mastery), size: 'lg', showLabel: false })}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h2 class="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold text-slate-900">
-                            <span>📖</span> Учебные материалы
-                        </h2>
-                        ${materials.length === 0 ? `
-                            <div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-                                Материалы пока не добавлены
-                            </div>
-                        ` : `
-                            <div class="grid gap-3">
-                                ${materials.map(material => `
-                                    <a href="#/materials/${material.id}" class="flex items-center gap-4 bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 transition-colors">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">📄</div>
-                                        <div class="flex-1">
-                                            <div class="font-medium text-slate-900">${material.title}</div>
-                                            <div class="text-xs text-slate-500">Версия ${material.version}</div>
-                                        </div>
-                                    </a>
-                                `).join('')}
-                            </div>
-                        `}
-                    </div>
-                    
-                    <div>
-                        <h2 class="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold text-slate-900">
-                            <span>📝</span> Тестирование
-                        </h2>
-                        
-                        <div class="bg-white rounded-xl border border-slate-200 p-6">
-                            <div class="mb-6">
-                                <h3 class="text-lg font-semibold text-slate-900">Пройти тест по теме</h3>
-                                <p class="mt-1 text-sm text-slate-500">Доступно ${questions.length} вопросов</p>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <div class="mb-2 text-sm font-medium text-slate-700">Количество вопросов</div>
-                                <div class="flex flex-wrap gap-2">
-                                    ${[5, 10, 20].filter(n => n <= questions.length).map(count => `
-                                        <a href="#/quiz/new?topicId=${id}&count=${count}" 
-                                            class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
-                                            ${count}
-                                        </a>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <a href="#/quiz/new?topicId=${id}&count=10" 
-                                class="block w-full bg-slate-900 text-white py-3 rounded-lg font-medium text-center hover:bg-slate-800 transition-colors">
-                                ▶ Начать тест
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="mx-auto max-w-5xl space-y-8"><div class="flex items-center gap-2 text-sm text-slate-500"><a href="#/" class="hover:text-slate-900">Главная</a><span>/</span><a href="#/branches/${branch.id}" class="hover:text-slate-900">${branch.name}</a><span>/</span><span class="text-slate-900">${topic.name}</span></div><div><h1 class="font-serif text-4xl font-semibold text-slate-900">${topic.name}</h1><p class="mt-3 text-lg text-slate-600">${topic.description}</p></div><div class="bg-white rounded-xl border border-slate-200 p-6"><div class="flex items-center justify-between"><div><div class="text-sm text-slate-500">Уровень освоения</div><div class="mt-1 flex items-baseline gap-3"><span class="text-3xl font-semibold text-slate-900">${Math.round(mastery)}%</span><span class="text-sm font-medium ${level.color}">${level.label}</span></div></div><div class="w-64">${MasteryBar(Math.round(mastery), 'lg', false)}</div></div></div><div><h2 class="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold text-slate-900"><span>📖</span> Учебные материалы</h2>${materials.length === 0 ? `<div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">Материалы пока не добавлены</div>` : `<div class="grid gap-3">${materials.map(material => `<a href="#/materials/${material.id}" class="flex items-center gap-4 bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 transition-colors"><div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">📄</div><div class="flex-1"><div class="font-medium text-slate-900">${material.title}</div><div class="text-xs text-slate-500">Версия ${material.version}</div></div></a>`).join('')}</div>`}</div><div><h2 class="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold text-slate-900"><span>📝</span> Тестирование</h2><div class="bg-white rounded-xl border border-slate-200 p-6"><div class="mb-6"><h3 class="text-lg font-semibold text-slate-900">Пройти тест по теме</h3><p class="mt-1 text-sm text-slate-500">Доступно ${questions.length} вопросов</p></div><div class="mb-4"><div class="mb-2 text-sm font-medium text-slate-700">Количество вопросов</div><div class="flex flex-wrap gap-2">${[5, 10, 20].filter(n => n <= questions.length).map(count => `<a href="#/quiz/new?topicId=${id}&count=${count}" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">${count}</a>`).join('')}</div></div><a href="#/quiz/new?topicId=${id}&count=10" class="block w-full bg-slate-900 text-white py-3 rounded-lg font-medium text-center hover:bg-slate-800 transition-colors">▶ Начать тест</a></div></div></div>`);
         }
-        
+
         function renderMaterial(id) {
             const material = DB.get('materials').find(m => m.id === id);
             if (!material) return renderNotFound();
-            
             const topic = DB.get('topics').find(t => t.id === material.topicId);
             const branch = DB.get('branches').find(b => b.id === topic.branchId);
-            
-            renderApp(`
-                <div class="mx-auto max-w-4xl space-y-6">
-                    <div class="flex items-center gap-2 text-sm text-slate-500">
-                        <a href="#/" class="hover:text-slate-900">Главная</a>
-                        <span>/</span>
-                        <a href="#/branches/${branch.id}" class="hover:text-slate-900">${branch.name}</a>
-                        <span>/</span>
-                        <a href="#/topics/${topic.id}" class="hover:text-slate-900">${topic.name}</a>
-                        <span>/</span>
-                        <span class="text-slate-900">${material.title}</span>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl border border-slate-200 p-8">
-                        <h1 class="font-serif text-3xl font-semibold text-slate-900 mb-6">${material.title}</h1>
-                        <div class="prose prose-slate max-w-none">
-                            ${material.content}
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <a href="#/topics/${topic.id}" class="flex-1 bg-slate-100 text-slate-900 py-3 rounded-lg font-medium text-center hover:bg-slate-200 transition-colors">
-                            ← К теме
-                        </a>
-                        <a href="#/quiz/new?topicId=${topic.id}&count=10" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-medium text-center hover:bg-slate-800 transition-colors">
-                            Пройти тест →
-                        </a>
-                    </div>
-                </div>
-            `);
+            renderApp(`<div class="mx-auto max-w-4xl space-y-6"><div class="flex items-center gap-2 text-sm text-slate-500"><a href="#/" class="hover:text-slate-900">Главная</a><span>/</span><a href="#/branches/${branch.id}" class="hover:text-slate-900">${branch.name}</a><span>/</span><a href="#/topics/${topic.id}" class="hover:text-slate-900">${topic.name}</a><span>/</span><span class="text-slate-900">${material.title}</span></div><div class="bg-white rounded-xl border border-slate-200 p-8"><h1 class="font-serif text-3xl font-semibold text-slate-900 mb-6">${material.title}</h1><div class="prose prose-slate max-w-none">${material.content}</div></div><div class="flex gap-3"><a href="#/topics/${topic.id}" class="flex-1 bg-slate-100 text-slate-900 py-3 rounded-lg font-medium text-center hover:bg-slate-200 transition-colors">← К теме</a><a href="#/quiz/new?topicId=${topic.id}&count=10" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-medium text-center hover:bg-slate-800 transition-colors">Пройти тест →</a></div></div>`);
         }
-        
+
+        let currentQuiz = null;
         function renderQuizSetup() {
             const params = new URLSearchParams(window.location.hash.split('?')[1]);
             const topicId = params.get('topicId');
             const count = parseInt(params.get('count') || '10');
-            
             const topic = DB.get('topics').find(t => t.id === topicId);
             const questions = DB.get('questions').filter(q => q.topicId === topicId && q.status === 'PUBLISHED');
-            
             if (questions.length === 0) {
-                renderApp(`
-                    <div class="mx-auto max-w-2xl text-center py-12">
-                        <div class="text-6xl mb-4">📝</div>
-                        <h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Вопросы пока не добавлены</h2>
-                        <p class="text-slate-600 mb-6">Для этой темы еще нет доступных вопросов</p>
-                        <a href="#/topics/${topicId}" class="inline-block bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800">
-                            Вернуться к теме
-                        </a>
-                    </div>
-                `);
+                renderApp(`<div class="mx-auto max-w-2xl text-center py-12"><div class="text-6xl mb-4">📝</div><h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Вопросы пока не добавлены</h2><p class="text-slate-600 mb-6">Для этой темы еще нет доступных вопросов</p><a href="#/topics/${topicId}" class="inline-block bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800">Вернуться к теме</a></div>`);
                 return;
             }
-            
-            renderApp(`
-                <div class="mx-auto max-w-2xl space-y-6">
-                    <div>
-                        <h1 class="font-serif text-3xl font-semibold text-slate-900">Настройка теста</h1>
-                        <p class="mt-2 text-slate-600">Тема: ${topic.name}</p>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl border border-slate-200 p-6">
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Количество вопросов</label>
-                            <select id="quizCount" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg">
-                                ${[5, 10, 20, 30].filter(n => n <= questions.length).map(n => `
-                                    <option value="${n}" ${n === count ? 'selected' : ''}>${n} вопросов</option>
-                                `).join('')}
-                            </select>
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Сложность</
+            renderApp(`<div class="mx-auto max-w-2xl space-y-6"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Настройка теста</h1><p class="mt-2 text-slate-600">Тема: ${topic.name}</p></div><div class="bg-white rounded-xl border border-slate-200 p-6"><div class="mb-6"><label class="block text-sm font-medium text-slate-700 mb-2">Количество вопросов</label><select id="quizCount" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg">${[5, 10, 20, 30].filter(n => n <= questions.length).map(n => `<option value="${n}" ${n === count ? 'selected' : ''}>${n} вопросов</option>`).join('')}</select></div><div class="mb-6"><label class="block text-sm font-medium text-slate-700 mb-2">Сложность</label><select id="quizDifficulty" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg"><option value="EASY">Базовый</option><option value="MEDIUM" selected>Средний</option><option value="HARD">Сложный</option><option value="OLYMPIAD">Олимпиадный</option></select></div><button onclick="startQuiz('${topicId}')" class="w-full bg-slate-900 text-white py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors">Начать тест</button></div></div>`);
+        }
+
+        function startQuiz(topicId) {
+            const count = parseInt(document.getElementById('quizCount').value);
+            const difficulty = document.getElementById('quizDifficulty').value;
+            const allQuestions = DB.get('questions').filter(q => q.topicId === topicId && q.status === 'PUBLISHED');
+            const filteredQuestions = difficulty === 'MEDIUM' ? allQuestions : allQuestions.filter(q => q.difficulty === difficulty);
+            const selectedQuestions = filteredQuestions.length >= count ? filteredQuestions.sort(() => 0.5 - Math.random()).slice(0, count) : allQuestions.sort(() => 0.5 - Math.random()).slice(0, count);
+            currentQuiz = { topicId, questions: selectedQuestions, currentIndex: 0, answers: {}, startTime: Date.now() };
+            renderQuizRunner();
+        }
+
+        function renderQuizRunner() {
+            if (!currentQuiz) { Router.goTo('/'); return; }
+            const question = currentQuiz.questions[currentQuiz.currentIndex];
+            const progress = ((currentQuiz.currentIndex + 1) / currentQuiz.questions.length) * 100;
+            renderApp(`<div class="mx-auto max-w-3xl space-y-6"><div><div class="mb-2 flex items-center justify-between text-sm"><span class="text-slate-500">Вопрос ${currentQuiz.currentIndex + 1} из ${currentQuiz.questions.length}</span><span class="font-medium text-slate-900">${Math.round(progress)}%</span></div><div class="h-2 w-full overflow-hidden rounded-full bg-slate-100"><div class="h-full bg-slate-900 transition-all" style="width: ${progress}%"></div></div></div><div class="bg-white rounded-xl border border-slate-200 p-8"><div class="mb-6"><div class="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">${getQuestionTypeLabel(question.type)}</div><h2 class="font-serif text-xl font-semibold leading-relaxed text-slate-900">${question.question}</h2></div>${renderQuestionInput(question)}</div><div class="flex items-center justify-between"><button onclick="prevQuestion()" class="px-6 py-2.5 border border-slate-300 rounded-lg font-medium hover:bg-slate-50 transition-colors" ${currentQuiz.currentIndex === 0 ? 'disabled' : ''}>← Назад</button><div class="flex gap-1">${currentQuiz.questions.map((_, idx) => `<button onclick="goToQuestion(${idx})" class="h-2 w-2 rounded-full transition-colors ${idx === currentQuiz.currentIndex ? 'bg-slate-900' : currentQuiz.answers[currentQuiz.questions[idx].id] !== undefined ? 'bg-slate-400' : 'bg-slate-200'}"></button>`).join('')}</div><button onclick="nextQuestion()" class="px-6 py-2.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">${currentQuiz.currentIndex === currentQuiz.questions.length - 1 ? 'Завершить' : 'Далее →'}</button></div></div>`);
+        }
+
+        function renderQuestionInput(question) {
+            if (question.type === 'SINGLE_CHOICE') {
+                return `<div class="space-y-2">${question.options.map(option => `<button onclick="selectAnswer('${question.id}', '${option.id}')" class="flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-all ${currentQuiz.answers[question.id] === option.id ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}"><div class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${currentQuiz.answers[question.id] === option.id ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}">${currentQuiz.answers[question.id] === option.id ? '<div class="h-2 w-2 rounded-full bg-white"></div>' : ''}</div><span class="text-slate-900">${option.text}</span></button>`).join('')}</div>`;
+            } else if (question.type === 'MULTI_CHOICE') {
+                const selected = currentQuiz.answers[question.id] || [];
+                return `<div class="space-y-2">${question.options.map(option => `<button onclick="toggleAnswer('${question.id}', '${option.id}')" class="flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-all ${selected.includes(option.id) ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}"><div class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 ${selected.includes(option.id) ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}">${selected.includes(option.id) ? '<svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' : ''}</div><span class="text-slate-900">${option.text}</span></button>`).join('')}</div>`;
+            } else if (question.type === 'TRUE_FALSE') {
+                return `<div class="space-y-2"><button onclick="selectAnswer('${question.id}', true)" class="flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all ${currentQuiz.answers[question.id] === true ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}"><div class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${currentQuiz.answers[question.id] === true ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}">${currentQuiz.answers[question.id] === true ? '<div class="h-2 w-2 rounded-full bg-white"></div>' : ''}</div><span class="text-slate-900">Верно</span></button><button onclick="selectAnswer('${question.id}', false)" class="flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all ${currentQuiz.answers[question.id] === false ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}"><div class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${currentQuiz.answers[question.id] === false ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}">${currentQuiz.answers[question.id] === false ? '<div class="h-2 w-2 rounded-full bg-white"></div>' : ''}</div><span class="text-slate-900">Неверно</span></button></div>`;
+            }
+            return '<div>Тип вопроса не поддерживается</div>';
+        }
+
+        function selectAnswer(questionId, answer) {
+            currentQuiz.answers[questionId] = answer;
+            renderQuizRunner();
+        }
+
+        function toggleAnswer(questionId, optionId) {
+            if (!currentQuiz.answers[questionId]) currentQuiz.answers[questionId] = [];
+            const idx = currentQuiz.answers[questionId].indexOf(optionId);
+            if (idx > -1) currentQuiz.answers[questionId].splice(idx, 1);
+            else currentQuiz.answers[questionId].push(optionId);
+            renderQuizRunner();
+        }
+
+        function prevQuestion() {
+            if (currentQuiz.currentIndex > 0) {
+                currentQuiz.currentIndex--;
+                renderQuizRunner();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuiz.currentIndex < currentQuiz.questions.length - 1) {
+                currentQuiz.currentIndex++;
+                renderQuizRunner();
+            } else {
+                completeQuiz();
+            }
+        }
+
+        function goToQuestion(idx) {
+            currentQuiz.currentIndex = idx;
+            renderQuizRunner();
+        }
+
+        function completeQuiz() {
+            const user = DB.get('currentUser');
+            const timeSpent = Math.round((Date.now() - currentQuiz.startTime) / 1000);
+            let correctCount = 0;
+            const errors = [];
+            currentQuiz.questions.forEach(question => {
+                const userAnswer = currentQuiz.answers[question.id];
+                let isCorrect = false;
+                if (question.type === 'MULTI_CHOICE') {
+                    const correct = new Set(question.correctAnswer);
+                    const user = new Set(userAnswer || []);
+                    isCorrect = correct.size === user.size && [...correct].every(id => user.has(id));
+                } else {
+                    isCorrect = userAnswer === question.correctAnswer;
+                }
+                if (isCorrect) correctCount++;
+                else errors.push({ userId: user.id, questionId: question.id, topicId: question.topicId, userAnswer, correctAnswer: question.correctAnswer, difficulty: question.difficulty, occurredAt: new Date().toISOString() });
+            });
+            const score = Math.round((correctCount / currentQuiz.questions.length) * 100);
+            const attempt = { id: 'a' + Date.now(), userId: user.id, topicId: currentQuiz.topicId, score, correctCount, totalCount: currentQuiz.questions.length, timeSpent, difficulty: 'MEDIUM', startedAt: new Date(currentQuiz.startTime).toISOString(), completedAt: new Date().toISOString() };
+            const attempts = DB.get('attempts');
+            attempts.push(attempt);
+            DB.set('attempts', attempts);
+            const allErrors = DB.get('errors');
+            allErrors.push(...errors);
+            DB.set('errors', allErrors);
+            ProgressService.updateProgress(user.id, currentQuiz.topicId, attempt);
+            currentQuiz = null;
+            Router.goTo(`/results/${attempt.id}`);
+        }
+
+        function getQuestionTypeLabel(type) {
+            const labels = { SINGLE_CHOICE: 'Один правильный ответ', MULTI_CHOICE: 'Несколько правильных ответов', TRUE_FALSE: 'Верно / Неверно', MATCHING: 'Сопоставление', SITUATIONAL: 'Ситуационная задача' };
+            return labels[type] || type;
+        }
+
+        function renderResults(id) {
+            const attempt = DB.get('attempts').find(a => a.id === id);
+            if (!attempt) return renderNotFound();
+            const topic = DB.get('topics').find(t => t.id === attempt.topicId);
+            const branch = DB.get('branches').find(b => b.id === topic.branchId);
+            const level = getMasteryLevel(attempt.score);
+            renderApp(`<div class="mx-auto max-w-3xl space-y-6"><div class="text-center py-8"><div class="inline-flex h-20 w-20 items-center justify-center rounded-full ${attempt.score >= 70 ? 'bg-emerald-50' : 'bg-amber-50'} mb-4"><span class="text-4xl">${attempt.score >= 70 ? '✓' : '⚠️'}</span></div><h1 class="font-serif text-4xl font-semibold text-slate-900 mb-2">Результат: ${attempt.score}%</h1><p class="text-lg text-slate-600 mb-4">${level.label}</p><div class="inline-block bg-white rounded-xl border border-slate-200 px-6 py-4"><div class="grid grid-cols-3 gap-6 text-center"><div><div class="text-2xl font-semibold text-slate-900">${attempt.correctCount}/${attempt.totalCount}</div><div class="text-xs text-slate-500">Правильных</div></div><div><div class="text-2xl font-semibold text-slate-900">${Math.round(attempt.timeSpent / 60)}м</div><div class="text-xs text-slate-500">Время</div></div><div><div class="text-2xl font-semibold text-slate-900">${attempt.totalCount - attempt.correctCount}</div><div class="text-xs text-slate-500">Ошибок</div></div></div></div></div><div class="flex gap-3"><a href="#/topics/${topic.id}" class="flex-1 bg-slate-100 text-slate-900 py-3 rounded-lg font-medium text-center hover:bg-slate-200 transition-colors">К теме</a><a href="#/quiz/new?topicId=${topic.id}&count=10" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-medium text-center hover:bg-slate-800 transition-colors">Пройти еще раз</a></div></div>`);
+        }
+
+        function renderProgress() {
+            const user = DB.get('currentUser');
+            const progress = DB.get('progress').filter(p => p.userId === user.id);
+            const attempts = DB.get('attempts').filter(a => a.userId === user.id && a.completedAt);
+            const branches = DB.get('branches');
+            const topics = DB.get('topics');
+            const totalTopics = topics.length;
+            const studiedTopics = progress.filter(p => p.masteryScore > 0).length;
+            const avgScore = attempts.length > 0 ? Math.round(attempts.reduce((s, a) => s + a.score, 0) / attempts.length) : null;
+            const totalTime = attempts.reduce((s, a) => s + a.timeSpent, 0);
+            const branchStats = branches.map(branch => { const branchTopics = topics.filter(t => t.branchId === branch.id); const branchProgress = progress.filter(p => branchTopics.some(t => t.id === p.topicId)); const mastery = branchTopics.length > 0 ? Math.round(branchTopics.reduce((sum, t) => { const p = branchProgress.find(bp => bp.topicId === t.id); return sum + (p?.masteryScore || 0); }, 0) / branchTopics.length) : 0; return { branch, mastery }; });
+            const sorted = [...progress].sort((a, b) => b.masteryScore - a.masteryScore);
+            const strong = sorted.filter(p => p.masteryScore >= 75).slice(0, 5);
+            const weak = sorted.filter(p => p.masteryScore > 0 && p.masteryScore < 60).slice(0, 5);
+            renderApp(`<div class="mx-auto max-w-6xl space-y-8"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Мой прогресс</h1><p class="mt-2 text-slate-600">Детальная статистика вашего обучения</p></div><div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">${[{ label: 'Общий прогресс', value: `${Math.round(progress.reduce((s, p) => s + p.masteryScore, 0) / Math.max(totalTopics, 1))}%`, icon: '📈' }, { label: 'Изучено тем', value: `${studiedTopics}/${totalTopics}`, icon: '📚' }, { label: 'Решено вопросов', value: progress.reduce((s, p) => s + p.totalAnswers, 0).toString(), icon: '🎯' }, { label: 'Средний балл', value: avgScore !== null ? `${avgScore}%` : '—', icon: '🏆' }, { label: 'Время обучения', value: `${Math.round(totalTime / 3600)}ч`, icon: '⏱️' }, { label: 'Тестов пройдено', value: attempts.length.toString(), icon: '✓' }].map(stat => `<div class="bg-white rounded-lg border border-slate-200 p-4"><div class="text-2xl mb-2">${stat.icon}</div><div class="text-2xl font-semibold text-slate-900">${stat.value}</div><div class="text-xs text-slate-500">${stat.label}</div></div>`).join('')}</div><div class="bg-white rounded-xl border border-slate-200 p-6"><h2 class="mb-4 font-serif text-2xl font-semibold text-slate-900">Прогресс по отраслям</h2><div class="overflow-x-auto"><table class="w-full"><thead><tr class="border-b border-slate-200 text-left text-xs uppercase tracking-wider text-slate-500"><th class="pb-3 pr-4">Отрасль</th><th class="pb-3 pr-4">Прогресс</th><th class="pb-3">Статус</th></tr></thead><tbody>${branchStats.map(({ branch, mastery }) => `<tr class="border-b border-slate-100"><td class="py-4 pr-4"><a href="#/branches/${branch.id}" class="font-medium text-slate-900 hover:underline">${branch.name}</a></td><td class="py-4 pr-4"><div class="w-40">${MasteryBar(mastery, 'sm')}</div></td><td class="py-4"><span class="rounded-full px-2 py-0.5 text-xs font-medium ${mastery >= 85 ? 'bg-emerald-50 text-emerald-700' : mastery >= 60 ? 'bg-blue-50 text-blue-700' : mastery >= 30 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'}">${getMasteryLevel(mastery).label}</span></td></tr>`).join('')}</tbody></table></div></div><div class="grid gap-6 md:grid-cols-2"><div class="bg-white rounded-xl border border-slate-200 p-6"><h3 class="mb-4 font-serif text-xl font-semibold text-emerald-700">✓ Сильные темы</h3>${strong.length === 0 ? `<p class="text-sm text-slate-500">Пока недостаточно данных</p>` : `<div class="space-y-3">${strong.map(p => { const topic = topics.find(t => t.id === p.topicId); return `<div><div class="mb-1 flex items-center justify-between text-sm"><span class="font-medium text-slate-900">${topic?.name}</span><span class="text-slate-500">${Math.round(p.masteryScore)}%</span></div>${MasteryBar(p.masteryScore, 'sm', false)}</div>`; }).join('')}</div>`}</div><div class="bg-white rounded-xl border border-slate-200 p-6"><h3 class="mb-4 font-serif text-xl font-semibold text-amber-700">⚠ Требуют повторения</h3>${weak.length === 0 ? `<p class="text-sm text-slate-500">Пока недостаточно данных</p>` : `<div class="space-y-3">${weak.map(p => { const topic = topics.find(t => t.id === p.topicId); return `<div><div class="mb-1 flex items-center justify-between text-sm"><span class="font-medium text-slate-900">${topic?.name}</span><span class="text-slate-500">${Math.round(p.masteryScore)}%</span></div>${MasteryBar(p.masteryScore, 'sm', false)}</div>`; }).join('')}</div>`}</div></div></div>`);
+        }
+
+        function renderReview() {
+            const user = DB.get('currentUser');
+            const weakTopics = ProgressService.getWeakTopics(user.id, 10);
+            renderApp(`<div class="mx-auto max-w-4xl space-y-6"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Повторение</h1><p class="mt-2 text-slate-600">Темы, которые стоит повторить</p></div>${weakTopics.length === 0 ? `<div class="bg-white rounded-xl border border-slate-200 p-12 text-center"><div class="text-6xl mb-4">✓</div><h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Отлично!</h2><p class="text-slate-600">У вас пока нет тем для повторения</p></div>` : `<div class="bg-white rounded-xl border border-slate-200 p-6"><h2 class="mb-4 font-serif text-xl font-semibold text-slate-900">Рекомендуется повторить сегодня</h2><div class="space-y-3">${weakTopics.map(topic => `<a href="#/quiz/new?topicId=${topic.topicId}&count=10" class="block rounded-lg border border-slate-200 p-4 hover:border-slate-300 hover:bg-slate-50 transition-colors"><div class="flex items-start justify-between gap-4"><div class="flex-1"><div class="text-xs font-medium text-slate-500">${topic.branchName}</div><div class="mt-1 font-medium text-slate-900">${topic.topicName}</div><div class="mt-1 text-xs text-slate-500">Освоение: ${Math.round(topic.masteryScore)}%</div></div><div class="w-32">${MasteryBar(Math.round(topic.masteryScore), 'sm')}</div></div></a>`).join('')}</div></div>`}</div>`);
+        }
+
+        function renderBookmarks() {
+            renderApp(`<div class="mx-auto max-w-4xl space-y-6"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Закладки</h1><p class="mt-2 text-slate-600">Ваши сохраненные материалы</p></div><div class="bg-white rounded-xl border border-slate-200 p-12 text-center"><div class="text-6xl mb-4">🔖</div><h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Пока пусто</h2><p class="text-slate-600">Добавляйте материалы в закладки для быстрого доступа</p></div></div>`);
+        }
+
+        function renderOlympiad() {
+            renderApp(`<div class="mx-auto max-w-4xl space-y-6"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Олимпиада</h1><p class="mt-2 text-slate-600">Комплексные тренировки по нескольким отраслям</p></div><div class="bg-white rounded-xl border border-slate-200 p-8 text-center"><div class="text-6xl mb-4">🏆</div><h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Олимпиадный режим</h2><p class="text-slate-600 mb-6">Симуляция реальных олимпиадных заданий</p><button class="bg-slate-900 text-white px-8 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors" disabled>Скоро будет доступно</button></div></div>`);
+        }
+
+        function renderSettings() {
+            const user = DB.get('currentUser');
+            renderApp(`<div class="mx-auto max-w-2xl space-y-6"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Настройки</h1><p class="mt-2 text-slate-600">Управление профилем</p></div><div class="bg-white rounded-xl border border-slate-200 p-6"><h2 class="text-xl font-semibold text-slate-900 mb-4">Профиль</h2><div class="space-y-4"><div><label class="block text-sm font-medium text-slate-700 mb-2">Имя</label><input type="text" value="${user.name}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg" readonly></div><div><label class="block text-sm font-medium text-slate-700 mb-2">Email</label><input type="email" value="${user.email}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg" readonly></div><div><label class="block text-sm font-medium text-slate-700 mb-2">Роль</label><input type="text" value="${user.role === 'ADMIN' ? 'Администратор' : 'Студент'}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg" readonly></div></div></div></div>`);
+        }
+
+        function renderAdmin() {
+            const user = DB.get('currentUser');
+            if (user.role !== 'ADMIN') { Router.goTo('/'); return; }
+            const branches = DB.get('branches');
+            const topics = DB.get('topics');
+            const materials = DB.get('materials');
+            const questions = DB.get('questions');
+            renderApp(`<div class="mx-auto max-w-6xl space-y-6"><div><h1 class="font-serif text-4xl font-semibold text-slate-900">Админ-панель</h1><p class="mt-2 text-slate-600">Управление контентом платформы</p></div><div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">${[{ label: 'Отрасли', value: branches.length, icon: '📚', href: '/admin/branches' }, { label: 'Темы', value: topics.length, icon: '📖', href: '/admin/topics' }, { label: 'Материалы', value: materials.length, icon: '📄', href: '/admin/materials' }, { label: 'Вопросы', value: questions.length, icon: '❓', href: '/admin/questions' }].map(item => `<a href="#${item.href}" class="bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 hover:shadow-md transition-all"><div class="text-3xl mb-3">${item.icon}</div><div class="text-3xl font-semibold text-slate-900">${item.value}</div><div class="text-sm text-slate-600">${item.label}</div></a>`).join('')}</div></div>`);
+        }
+
+        function renderAdminBranches() {
+            const branches = DB.get('branches');
+            renderApp(`<div class="mx-auto max-w-6xl space-y-6"><div class="flex items-center justify-between"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Отрасли права</h1><p class="mt-1 text-slate-600">Управление отраслями</p></div><button onclick="showAddBranchModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition-colors">+ Добавить отрасль</button></div><div class="bg-white rounded-xl border border-slate-200 overflow-x-auto"><table class="w-full"><thead><tr class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500"><th class="px-6 py-3">Название</th><th class="px-6 py-3">Описание</th><th class="px-6 py-3">Порядок</th><th class="px-6 py-3"></th></tr></thead><tbody>${branches.map(branch => `<tr class="border-b border-slate-100"><td class="px-6 py-4 font-medium text-slate-900">${branch.name}</td><td class="px-6 py-4 text-sm text-slate-600">${branch.description}</td><td class="px-6 py-4 text-sm text-slate-600">${branch.order}</td><td class="px-6 py-4 text-right"><button onclick="deleteBranch('${branch.id}')" class="text-sm text-rose-600 hover:text-rose-800">Удалить</button></td></tr>`).join('')}</tbody></table></div></div>`);
+        }
+
+        function showAddBranchModal() {
+            const name = prompt('Название отрасли:');
+            if (!name) return;
+            const description = prompt('Описание:') || '';
+            const branches = DB.get('branches');
+            branches.push({ id: 'b' + Date.now(), name, slug: name.toLowerCase().replace(/\s+/g, '-'), description, order: branches.length + 1 });
+            DB.set('branches', branches);
+            Router.navigate();
+        }
+
+        function deleteBranch(id) {
+            if (!confirm('Удалить отрасль?')) return;
+            const branches = DB.get('branches').filter(b => b.id !== id);
+            DB.set('branches', branches);
+            Router.navigate();
+        }
+
+        function renderAdminTopics() {
+            const topics = DB.get('topics');
+            const branches = DB.get('branches');
+            renderApp(`<div class="mx-auto max-w-6xl space-y-6"><div class="flex items-center justify-between"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Темы</h1><p class="mt-1 text-slate-600">Управление темами</p></div><button onclick="showAddTopicModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition-colors">+ Добавить тему</button></div><div class="bg-white rounded-xl border border-slate-200 overflow-x-auto"><table class="w-full"><thead><tr class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500"><th class="px-6 py-3">Название</th><th class="px-6 py-3">Отрасль</th><th class="px-6 py-3">Описание</th><th class="px-6 py-3"></th></tr></thead><tbody>${topics.map(topic => { const branch = branches.find(b => b.id === topic.branchId); return `<tr class="border-b border-slate-100"><td class="px-6 py-4 font-medium text-slate-900">${topic.name}</td><td class="px-6 py-4 text-sm text-slate-600">${branch?.name || '—'}</td><td class="px-6 py-4 text-sm text-slate-600">${topic.description}</td><td class="px-6 py-4 text-right"><button onclick="deleteTopic('${topic.id}')" class="text-sm text-rose-600 hover:text-rose-800">Удалить</button></td></tr>`; }).join('')}</tbody></table></div></div>`);
+        }
+
+        function showAddTopicModal() {
+            const branches = DB.get('branches');
+            const branchId = prompt(`ID отрасли (${branches.map(b => `${b.id}: ${b.name}`).join(', ')}):`);
+            if (!branchId) return;
+            const name = prompt('Название темы:');
+            if (!name) return;
+            const description = prompt('Описание:') || '';
+            const topics = DB.get('topics');
+            topics.push({ id: 't' + Date.now(), branchId, name, slug: name.toLowerCase().replace(/\s+/g, '-'), description, order: topics.length + 1 });
+            DB.set('topics', topics);
+            Router.navigate();
+        }
+
+        function deleteTopic(id) {
+            if (!confirm('Удалить тему?')) return;
+            const topics = DB.get('topics').filter(t => t.id !== id);
+            DB.set('topics', topics);
+            Router.navigate();
+        }
+
+        function renderAdminMaterials() {
+            const materials = DB.get('materials');
+            const topics = DB.get('topics');
+            renderApp(`<div class="mx-auto max-w-6xl space-y-6"><div class="flex items-center justify-between"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Материалы</h1><p class="mt-1 text-slate-600">Учебные материалы</p></div><button onclick="showAddMaterialModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition-colors">+ Добавить материал</button></div><div class="bg-white rounded-xl border border-slate-200 overflow-x-auto"><table class="w-full"><thead><tr class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500"><th class="px-6 py-3">Название</th><th class="px-6 py-3">Тема</th><th class="px-6 py-3">Статус</th><th class="px-6 py-3">Версия</th><th class="px-6 py-3"></th></tr></thead><tbody>${materials.map(material => { const topic = topics.find(t => t.id === material.topicId); return `<tr class="border-b border-slate-100"><td class="px-6 py-4 font-medium text-slate-900">${material.title}</td><td class="px-6 py-4 text-sm text-slate-600">${topic?.name || '—'}</td><td class="px-6 py-4"><span class="rounded-full px-2 py-0.5 text-xs font-medium ${material.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${material.status}</span></td><td class="px-6 py-4 text-sm text-slate-600">v${material.version}</td><td class="px-6 py-4 text-right"><button onclick="deleteMaterial('${material.id}')" class="text-sm text-rose-600 hover:text-rose-800">Удалить</button></td></tr>`; }).join('')}</tbody></table></div></div>`);
+        }
+
+        function showAddMaterialModal() {
+            const topics = DB.get('topics');
+            const topicId = prompt(`ID темы (${topics.map(t => `${t.id}: ${t.name}`).join(', ')}):`);
+            if (!topicId) return;
+            const title = prompt('Название материала:');
+            if (!title) return;
+            const content = prompt('Содержимое (HTML):') || '<p>Материал</p>';
+            const materials = DB.get('materials');
+            materials.push({ id: 'm' + Date.now(), topicId, title, status: 'PUBLISHED', version: 1, content });
+            DB.set('materials', materials);
+            Router.navigate();
+        }
+
+        function deleteMaterial(id) {
+            if (!confirm('Удалить материал?')) return;
+            const materials = DB.get('materials').filter(m => m.id !== id);
+            DB.set('materials', materials);
+            Router.navigate();
+        }
+
+        function renderAdminQuestions() {
+            const questions = DB.get('questions');
+            const topics = DB.get('topics');
+            renderApp(`<div class="mx-auto max-w-6xl space-y-6"><div class="flex items-center justify-between"><div><h1 class="font-serif text-3xl font-semibold text-slate-900">Вопросы</h1><p class="mt-1 text-slate-600">Банк вопросов</p></div><button onclick="showAddQuestionModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition-colors">+ Добавить вопрос</button></div><div class="bg-white rounded-xl border border-slate-200 overflow-x-auto"><table class="w-full"><thead><tr class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500"><th class="px-6 py-3">Вопрос</th><th class="px-6 py-3">Тема</th><th class="px-6 py-3">Тип</th><th class="px-6 py-3">Сложность</th><th class="px-6 py-3">Статус</th><th class="px-6 py-3"></th></tr></thead><tbody>${questions.map(question => { const topic = topics.find(t => t.id === question.topicId); return `<tr class="border-b border-slate-100"><td class="px-6 py-4 text-sm text-slate-900">${question.question.substring(0, 50)}...</td><td class="px-6 py-4 text-sm text-slate-600">${topic?.name || '—'}</td><td class="px-6 py-4 text-sm text-slate-600">${question.type}</td><td class="px-6 py-4"><span class="rounded-full px-2 py-0.5 text-xs font-medium ${question.difficulty === 'EASY' ? 'bg-green-50 text-green-700' : question.difficulty === 'MEDIUM' ? 'bg-blue-50 text-blue-700' : question.difficulty === 'HARD' ? 'bg-orange-50 text-orange-700' : 'bg-rose-50 text-rose-700'}">${question.difficulty}</span></td><td class="px-6 py-4"><span class="rounded-full px-2 py-0.5 text-xs font-medium ${question.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${question.status}</span></td><td class="px-6 py-4 text-right"><button onclick="deleteQuestion('${question.id}')" class="text-sm text-rose-600 hover:text-rose-800">Удалить</button></td></tr>`; }).join('')}</tbody></table></div></div>`);
+        }
+
+        function showAddQuestionModal() {
+            const topics = DB.get('topics');
+            const topicId = prompt(`ID темы (${topics.map(t => `${t.id}: ${t.name}`).join(', ')}):`);
+            if (!topicId) return;
+            const question = prompt('Текст вопроса:');
+            if (!question) return;
+            const questions = DB.get('questions');
+            questions.push({ id: 'q' + Date.now(), topicId, type: 'SINGLE_CHOICE', difficulty: 'MEDIUM', question, options: [{ id: 'a', text: 'Вариант 1' }, { id: 'b', text: 'Вариант 2' }], correctAnswer: 'a', explanation: 'Объяснение', status: 'PUBLISHED' });
+            DB.set('questions', questions);
+            Router.navigate();
+        }
+
+        function deleteQuestion(id) {
+            if (!confirm('Удалить вопрос?')) return;
+            const questions = DB.get('questions').filter(q => q.id !== id);
+            DB.set('questions', questions);
+            Router.navigate();
+        }
+
+        function renderNotFound() {
+            renderApp(`<div class="mx-auto max-w-2xl text-center py-12"><div class="text-6xl mb-4">404</div><h2 class="font-serif text-2xl font-semibold text-slate-900 mb-2">Страница не найдена</h2><p class="text-slate-600 mb-6">Запрошенная страница не существует</p><a href="#/" class="inline-block bg-slate-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800">На главную</a></div>`);
+        }
+
+        // ============ INIT ============
+        DB.init();
+        Router.init();
+    </script>
+</body>
+</html>
